@@ -170,7 +170,7 @@ typedef struct {
 
 
 /* стандартные методы модуля nginx */
-static ngx_int_t ngx_http_sla_init             (ngx_conf_t* cf);
+static ngx_int_t ngx_http_sla             (ngx_conf_t* cf);
 static void*     ngx_http_sla_create_main_conf (ngx_conf_t* cf);
 static void*     ngx_http_sla_create_loc_conf  (ngx_conf_t* cf);
 static char*     ngx_http_sla_merge_loc_conf   (ngx_conf_t* cf, void* parent, void* child);
@@ -338,7 +338,7 @@ static ngx_command_t ngx_http_sla_commands[] = {
  */
 static ngx_http_module_t ngx_http_sla_module_ctx = {
     NULL,                            /* preconfiguration              */
-    ngx_http_sla_init,               /* postconfiguration             */
+    ngx_http_sla,                    /* postconfiguration             */
 
     ngx_http_sla_create_main_conf,   /* create main configuration     */
     NULL,                            /* init main configuration       */
@@ -374,7 +374,7 @@ ngx_module_t ngx_http_sla_module = {
 static double ngx_http_sla_quantile_cc;
 
 
-static ngx_int_t ngx_http_sla_init (ngx_conf_t* cf)
+static ngx_int_t ngx_http_sla (ngx_conf_t* cf)
 {
     ngx_http_handler_pt*       handler;
     ngx_http_core_main_conf_t* config;
