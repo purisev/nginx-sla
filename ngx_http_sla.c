@@ -1464,7 +1464,7 @@ static void ngx_http_sla_init_quantiles (const ngx_http_sla_pool_t* pool, ngx_ht
 
     for (i = 0; i < NGX_HTTP_SLA_QUANTILE_M; i++) {
         for (j = 0; j < pool->quantiles.nelts; j++) {
-            if (abs((double)counter->quantiles_fifo[i] - counter->quantiles[j]) <= counter->quantiles_c) {
+            if (fabs((double)counter->quantiles_fifo[i] - counter->quantiles[j]) <= counter->quantiles_c) {
                 quantile_diff[j]++;
             }
         }
@@ -1495,7 +1495,7 @@ static void ngx_http_sla_update_quantiles (const ngx_http_sla_pool_t* pool, ngx_
             if ((double)counter->quantiles_fifo[i] <= counter->quantiles[j]) {
                 quantile_less[j]++;
             }
-            if (abs((double)counter->quantiles_fifo[i] - counter->quantiles[j]) <= counter->quantiles_c) {
+            if (fabs((double)counter->quantiles_fifo[i] - counter->quantiles[j]) <= counter->quantiles_c) {
                 quantile_diff[j]++;
             }
         }
