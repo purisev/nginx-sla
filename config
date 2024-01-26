@@ -3,4 +3,4 @@ ngx_module_name=ngx_http_sla
 ngx_module_srcs="$ngx_addon_dir/ngx_http_sla.c"
 
 ngx_addon_name=ngx_http_sla
-. config
+. $ngx_addon_dir/config
