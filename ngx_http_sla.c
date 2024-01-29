@@ -808,12 +808,12 @@ static ngx_int_t ngx_http_sla_status_handler (ngx_http_request_t* r)
 
     size =
         (
-            (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\"} \n")                  + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1 * (NGX_HTTP_SLA_MAX_HTTP_LEN + 1 /* http_xxx */ + 6 /* http_2xx */)) +
-            (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\", \"time\"=\"avg\"} \n")     + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1) +
-            (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\", \"time\"=\"avg_mov\"} \n") + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1) +
-            (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\", \"code\"=\"\"} \n")             + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + 2 * NGX_ATOMIC_T_LEN + 1) * NGX_HTTP_SLA_MAX_TIMINGS_LEN +
-            (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\", \"time\"=\"\", \"agg\"=\"1\"} \n")         + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + 2 * NGX_ATOMIC_T_LEN + 1) * NGX_HTTP_SLA_MAX_TIMINGS_LEN +
-            (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\", \"quantile\"=\"\"} \n")          + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1) * NGX_HTTP_SLA_MAX_QUANTILES_LEN +
+            (sizeof("nginx_sla{\"pool\"=\"\", \"upstream\"=\"\"} \n")                  + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1 * (NGX_HTTP_SLA_MAX_HTTP_LEN + 1 /* http_xxx */ + 6 /* http_2xx */)) +
+            (sizeof("nginx_sla{\"pool\"=\"\", \"upstream\"=\"\", \"time\"=\"avg\"} \n")     + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1) +
+            (sizeof("nginx_sla{\"pool\"=\"\", \"upstream\"=\"\", \"time\"=\"avg_mov\"} \n") + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1) +
+            (sizeof("nginx_sla{\"pool\"=\"\", \"upstream\"=\"\", \"code\"=\"\"} \n")             + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + 2 * NGX_ATOMIC_T_LEN + 1) * NGX_HTTP_SLA_MAX_TIMINGS_LEN +
+            (sizeof("nginx_sla{\"pool\"=\"\", \"upstream\"=\"\", \"time\"=\"\", \"agg\"=\"1\"} \n")         + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + 2 * NGX_ATOMIC_T_LEN + 1) * NGX_HTTP_SLA_MAX_TIMINGS_LEN +
+            (sizeof("nginx_sla{\"pool\"=\"\", \"upstream\"=\"\", \"quantile\"=\"\"} \n")          + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1) * NGX_HTTP_SLA_MAX_QUANTILES_LEN +
             4 * NGX_HTTP_SLA_AIRBUG    /* add two parachute, swiss knife and kit */
         ) * NGX_HTTP_SLA_MAX_COUNTERS_LEN * config->pools.nelts;
 
@@ -1380,39 +1380,39 @@ static void ngx_http_sla_print_counter (ngx_buf_t* buf, const ngx_http_sla_pool_
     quantile       = pool->quantiles.elts;
 
     /* коды http */
-    buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\"} %uA\n", &pool->name, counter->name, http_count);
+    buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\"} %uA\n", &pool->name, counter->name, http_count);
     // buf->last = ngx_sprintf(buf->last, "%V.%s.http = %uA\n", &pool->name, counter->name, http_count);
 
     for (i = 0; i < pool->http.nelts - 1; i++) {
         // buf->last = ngx_sprintf(buf->last, "%V.%s.http_%uA = %uA\n", &pool->name, counter->name, http[i], counter->http[i]);
-        buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\", \"code\"=\"%uA\"} %uA\n", &pool->name, counter->name, http[i], counter->http[i]);
+        buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\", \"code\"=\"%uA\"} %uA\n", &pool->name, counter->name, http[i], counter->http[i]);
     }
 
     /* группы кодов http */
     // buf->last = ngx_sprintf(buf->last, "%V.%s.http_xxx = %uA\n", &pool->name, counter->name, http_xxx_count);
-    buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\", \"code\"=\"xxx\"} %uA\n", &pool->name, counter->name, http_xxx_count);
+    buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\", \"code\"=\"xxx\"} %uA\n", &pool->name, counter->name, http_xxx_count);
 
     for (i = 0; i < 5; i++) {
-        buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\", \"code\"=\"%uAxx\"} %uA\n", &pool->name, counter->name, i + 1, counter->http_xxx[i]);
+        buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\", \"code\"=\"%uAxx\"} %uA\n", &pool->name, counter->name, i + 1, counter->http_xxx[i]);
         // buf->last = ngx_sprintf(buf->last, "%V.%s.http_%uAxx = %uA\n", &pool->name, counter->name,  i + 1, counter->http_xxx[i]);
     }
 
     /* среднее */
-    buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\", \"time\"=\"avg\"} %uA\n", &pool->name, counter->name, (ngx_uint_t)counter->time_avg);
+    buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\", \"time\"=\"avg\"} %uA\n", &pool->name, counter->name, (ngx_uint_t)counter->time_avg);
     // buf->last = ngx_sprintf(buf->last, "%V.%s.time.avg = %uA\n", &pool->name, counter->name, (ngx_uint_t)counter->time_avg);
     // buf->last = ngx_sprintf(buf->last, "%V.%s.time.avg.mov = %uA\n", &pool->name, counter->name, (ngx_uint_t)counter->time_avg_mov);
-    buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\", \"time\"=\"avg_mov\"} %uA\n", &pool->name, counter->name, (ngx_uint_t)counter->time_avg_mov);
+    buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\", \"time\"=\"avg_mov\"} %uA\n", &pool->name, counter->name, (ngx_uint_t)counter->time_avg_mov);
 
     /* тайминги */
     for (i = 0; i < pool->timings.nelts; i++) {
         if (timing[i] != (ngx_uint_t)-1) {
             // buf->last = ngx_sprintf(buf->last, "%V.%s.%uA = %uA\n", &pool->name, counter->name, timing[i], counter->timings[i]);
             // buf->last = ngx_sprintf(buf->last, "%V.%s.%uA.agg = %uA\n", &pool->name, counter->name, timing[i], counter->timings_agg[i]);
-            buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\", \"time\"=\"%uA\", \"agg\"=\"0\"} %uA\n", &pool->name, counter->name, timing[i], counter->timings[i]);
-            buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\", \"time\"=\"%uA\", \"agg\"=\"1\"} %uA\n", &pool->name, counter->name, timing[i], counter->timings_agg[i]);
+            buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\", \"time\"=\"%uA\", \"agg\"=\"0\"} %uA\n", &pool->name, counter->name, timing[i], counter->timings[i]);
+            buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\", \"time\"=\"%uA\", \"agg\"=\"1\"} %uA\n", &pool->name, counter->name, timing[i], counter->timings_agg[i]);
         } else {
-            buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\", \"time\"=\"inf\", \"agg\"=\"0\"} %uA\n", &pool->name, counter->name, counter->timings[i]);
-            buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\", \"time\"=\"inf\", \"agg\"=\"1\"} %uA\n", &pool->name, counter->name, timings_count);
+            buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\", \"time\"=\"inf\", \"agg\"=\"0\"} %uA\n", &pool->name, counter->name, counter->timings[i]);
+            buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\", \"time\"=\"inf\", \"agg\"=\"1\"} %uA\n", &pool->name, counter->name, timings_count);
             // buf->last = ngx_sprintf(buf->last, "%V.%s.inf = %uA\n", &pool->name, counter->name, counter->timings[i]);
             // buf->last = ngx_sprintf(buf->last, "%V.%s.inf.agg = %uA\n", &pool->name, counter->name, timings_count);
         }
@@ -1420,7 +1420,7 @@ static void ngx_http_sla_print_counter (ngx_buf_t* buf, const ngx_http_sla_pool_
 
     /* процентили */
     for (i = 0; i < pool->quantiles.nelts; i++) {
-        buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"counter\"=\"%s\", \"quantile\"=\"%uA\"} %uA\n", &pool->name, counter->name, quantile[i], (ngx_uint_t)counter->quantiles[i]);
+        buf->last = ngx_sprintf(buf->last, "nginx_sla{\"pool\"=\"%V\", \"upstream\"=\"%s\", \"quantile\"=\"%uA\"} %uA\n", &pool->name, counter->name, quantile[i], (ngx_uint_t)counter->quantiles[i]);
         // buf->last = ngx_sprintf(buf->last, "%V.%s.%uA%% = %uA\n", &pool->name, counter->name, quantile[i], (ngx_uint_t)counter->quantiles[i]);
     }
 }
