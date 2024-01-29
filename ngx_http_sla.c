@@ -37,33 +37,33 @@
  * Максимальная длина имени апстрима (минус терминирующий ноль)
  */
 #ifndef NGX_HTTP_SLA_MAX_NAME_LEN
-    #define NGX_HTTP_SLA_MAX_NAME_LEN 256
+#define NGX_HTTP_SLA_MAX_NAME_LEN 256
 #endif
 
 #if NGX_HTTP_SLA_MAX_NAME_LEN < 2
-    #error "NGX_HTTP_SLA_MAX_NAME_LEN must be at least 2"
+#error "NGX_HTTP_SLA_MAX_NAME_LEN must be at least 2"
 #endif
 
 /**
  * Максимальное количество отслеживаемых статусов HTTP (минус 1 для суммарной статистики)
  */
 #ifndef NGX_HTTP_SLA_MAX_HTTP_LEN
-    #define NGX_HTTP_SLA_MAX_HTTP_LEN 32
+#define NGX_HTTP_SLA_MAX_HTTP_LEN 32
 #endif
 
 #if NGX_HTTP_SLA_MAX_HTTP_LEN < 14
-    #error "NGX_HTTP_SLA_MAX_HTTP_LEN must be at least 14"
+#error "NGX_HTTP_SLA_MAX_HTTP_LEN must be at least 14"
 #endif
 
 /**
  * Максимальное количество отслеживаемых таймингов (минус 1 для "бесконечности")
  */
 #ifndef NGX_HTTP_SLA_MAX_TIMINGS_LEN
-    #define NGX_HTTP_SLA_MAX_TIMINGS_LEN 32
+#define NGX_HTTP_SLA_MAX_TIMINGS_LEN 32
 #endif
 
 #if NGX_HTTP_SLA_MAX_TIMINGS_LEN < 4
-    #error "NGX_HTTP_SLA_MAX_TIMINGS_LEN must be at least 4"
+#error "NGX_HTTP_SLA_MAX_TIMINGS_LEN must be at least 4"
 #endif
 
 /**
@@ -71,40 +71,40 @@
  * На данный момент список квантилей не конфигурируется (их 7)
  */
 #ifndef NGX_HTTP_SLA_MAX_QUANTILES_LEN
-    #define NGX_HTTP_SLA_MAX_QUANTILES_LEN 7
+#define NGX_HTTP_SLA_MAX_QUANTILES_LEN 7
 #endif
 
 #if NGX_HTTP_SLA_MAX_QUANTILES_LEN != 7
-    #error "NGX_HTTP_SLA_MAX_QUANTILES_LEN must be 7"
+#error "NGX_HTTP_SLA_MAX_QUANTILES_LEN must be 7"
 #endif
 
 /**
  * Максимальное количество счетчиков в пуле (минус 1 для счетчика по умолчанию)
  */
 #ifndef NGX_HTTP_SLA_MAX_COUNTERS_LEN
-    #define NGX_HTTP_SLA_MAX_COUNTERS_LEN 16
+#define NGX_HTTP_SLA_MAX_COUNTERS_LEN 16
 #endif
 
 #if NGX_HTTP_SLA_MAX_COUNTERS_LEN < 1
-    #error "NGX_HTTP_SLA_MAX_COUNTERS_LEN must be at least 1"
+#error "NGX_HTTP_SLA_MAX_COUNTERS_LEN must be at least 1"
 #endif
 
 /**
  * Размер FIFO буфера для вычисления квантилей
  */
 #ifndef NGX_HTTP_SLA_QUANTILE_M
-    #define NGX_HTTP_SLA_QUANTILE_M 100
+#define NGX_HTTP_SLA_QUANTILE_M 100
 #endif
 
 #if NGX_HTTP_SLA_QUANTILE_M < 10
-    #error "NGX_HTTP_SLA_QUANTILE_M must be at least 10"
+#error "NGX_HTTP_SLA_QUANTILE_M must be at least 10"
 #endif
 
 /**
  * Весовой коэффициент обновления вычисляемых квантилей
  */
 #ifndef NGX_HTTP_SLA_QUANTILE_W
-    #define NGX_HTTP_SLA_QUANTILE_W 0.01
+#define NGX_HTTP_SLA_QUANTILE_W 0.01
 #endif
 
 
@@ -803,12 +803,12 @@ static ngx_int_t ngx_http_sla_status_handler (ngx_http_request_t* r)
     config = ngx_http_get_module_main_conf(r, ngx_http_sla_module);
 
 #ifndef NGX_HTTP_SLA_AIRBUG
-    #define NGX_HTTP_SLA_AIRBUG 1024
+#define NGX_HTTP_SLA_AIRBUG 1024
 #endif
 
     size =
         (
-            (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\"} \n")                  + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIT_T_LEN + 1 * (NGX_HTTP_SLA_MAX_HTTP_LEN + 1 /* http_xxx */ + 6 /* http_2xx */)) +
+            (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\"} \n")                  + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1 * (NGX_HTTP_SLA_MAX_HTTP_LEN + 1 /* http_xxx */ + 6 /* http_2xx */)) +
             (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\", \"time\"=\"avg\"} \n")     + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1) +
             (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\", \"time\"=\"avg_mov\"} \n") + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + NGX_ATOMIC_T_LEN + 1) +
             (sizeof("nginx_sla{\"pool\"=\"\", \"counter\"=\"\", \"code\"=\"\"} \n")             + 2 * NGX_HTTP_SLA_MAX_NAME_LEN + 2 * NGX_ATOMIC_T_LEN + 1) * NGX_HTTP_SLA_MAX_TIMINGS_LEN +
@@ -983,13 +983,13 @@ static ngx_int_t ngx_http_sla_processor (ngx_http_request_t* r)
                 continue;
             }
 
-           #if nginx_version <= 1009000
+#if nginx_version <= 1009000
             ms = (ngx_msec_int_t)(state[i].response_sec * 1000 + state[i].response_msec);
             ms = ngx_max(ms, 0);
-           #else
+#else
             ms = (ngx_msec_int_t)(state[i].response_time);
             ms = ngx_max(ms, 0);
-           #endif
+#endif
             time += ms;
 
             alias = ngx_http_sla_get_alias(config->aliases, state[i].peer);
